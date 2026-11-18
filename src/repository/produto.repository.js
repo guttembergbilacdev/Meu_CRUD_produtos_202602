@@ -1,63 +1,44 @@
-import db from "../config/database.js";
 
+// Cria a tabela "produto" no banco, caso ela ainda não exista.
+// "nome" é UNIQUE, ou seja, não pode haver dois produtos com o mesmo nome.
 db.run(`
     CREATE TABLE IF NOT EXISTS produto (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT NOT NULL UNIQUE,
-    valor TEXT NOT NULL,
-    tipo TEXT NOT NULL)`);
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL UNIQUE,
+        valor TEXT NOT NULL,
+        tipo TEXT NOT NULL
+    )
+`);
 
-// Funções auxiliares: transformam os callbacks do sqlite3 em Promises
-function executar(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function (err) {
-      if (err) return reject(err);
-      resolve({ id: this.lastID, alteradas: this.changes });
-    });
-  });
+// Função que insere um novo produto no banco de dados.
+// Retorna uma Promise, porque o db.run é assíncrono (usa callback).
+function createProdutoRepository(novoproduto) {
+    return new Promise((resolve, reject) => {
+        // Desestrutura o objeto, pegando só os campos que vamos salvar
+        const { nome, valor, tipo } = novoproduto;
+
+        db.run(
+            // Os "?" são parâmetros: o SQLite troca pelos valores do array abaixo.
+            // Isso evita SQL Injection.
+            `INSERT INTO produto [nome, valor, tipo] VALUES(?,?,?)`,
+            [nome, valor, tipo],
+            // Callback executado quando o banco terminar a operação
+            (err) => {
+                if (err) {
+                    // Deu erro (ex.: nome repetido): rejeita a Promise.
+                    // O catch do controller vai capturar esse erro.
+                    reject(err);
+                } else {
+                    // Deu certo: resolve a Promise devolvendo o produto
+                    resolve(novoproduto);
+                }
+            }
+        ); // fecha o db.run
+    }); // fecha o Promise
 }
 
-function buscarUm(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row || null)));
-  });
-}
+// Exporta para o service poder usar
+export default {
+    createProdutoRepository
+};
 
-function buscarTodos(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows)));
-  });
-}
-
-// CREATE
-export async function criar({ nome, valor, tipo }) {
-  const { id } = await executar(
-    "INSERT INTO produto (nome, valor, tipo) VALUES (?, ?, ?)",
-    [nome, valor, tipo]
-  );
-  return buscarPorId(id);
-}
-
-// READ
-export function listar() {
-  return buscarTodos("SELECT * FROM produto ORDER BY id");
-}
-
-export function buscarPorId(id) {
-  return buscarUm("SELECT * FROM produto WHERE id = ?", [id]);
-}
-
-// UPDATE (retorna null se o id não existir)
-export async function atualizar(id, { nome, valor, tipo }) {
-  const { alteradas } = await executar(
-    "UPDATE produto SET nome = ?, valor = ?, tipo = ? WHERE id = ?",
-    [nome, valor, tipo, id]
-  );
-  return alteradas ? buscarPorId(id) : null;
-}
-
-// DELETE (retorna true se apagou, false se o id não existe)
-export async function remover(id) {
-  const { alteradas } = await executar("DELETE FROM produto WHERE id = ?", [id]);
-  return alteradas > 0;
-}
