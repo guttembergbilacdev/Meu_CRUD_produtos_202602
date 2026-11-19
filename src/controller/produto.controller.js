@@ -1,3 +1,4 @@
+
 // Importa o service de produtos, que contém a regra de negócio e o acesso ao banco.
 // O controller NÃO fala direto com o banco: ele delega essa tarefa ao service.
 import produtoService from "../services/produto.service.js";
