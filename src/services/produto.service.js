@@ -19,7 +19,14 @@ async function createProdutoService(novoProduto) {
     return produtoSalve;
 }
 
+async function readALLProdutoService() {
+    const produtos = await produtoRepository.readALLProdutoRepository();
+
+    return produtos;
+}
+
 // Exporta o service para o controller poder usar
 export default {
-    createProdutoService
+    createProdutoService,
+    readALLProdutoService
 };

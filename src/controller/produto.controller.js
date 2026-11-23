@@ -17,7 +17,7 @@ async function createProdutoController(request, response) {
 
           // Se deu tudo certo, responde com status 201 (Created = criado com sucesso)
         // e devolve o produto salvo para o cliente.
-        response.status(201). send(produtoSalvo);
+        response.status(200). send(produtoSalvo);
     } catch(error) {
 
         // Se algo falhou no try (ex.: dados inválidos), cai aqui.
@@ -26,7 +26,16 @@ async function createProdutoController(request, response) {
         response.status(400). send(error.message);
     }
 }
+
+async function readALLProdutoController(request, response) {
+    try {
+        const produto = await produtoService.readALLProdutoService.status(200).send({produtos});
+    } catch(error) {
+        response.status(400).send(error.message);
+    }
+}
 // Exporta o controller como padrão, para ser usado nas rotas (ex.: routes/produto.routes.js)
 export default {
-    createProdutoController
+    createProdutoController,
+    readALLProdutoController
 }

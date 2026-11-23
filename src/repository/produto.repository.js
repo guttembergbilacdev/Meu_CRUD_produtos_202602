@@ -38,7 +38,25 @@ function createProdutoRepository(novoproduto) {
 }
 
 // Exporta para o service poder usar
-export default {
-    createProdutoRepository
-};
 
+
+function readALLProdutoRepository() {
+    return new Promise((resolve, reject) => {
+        db.all(
+            'SELECT * FRON produto', [],
+            (error, rows) => {
+                if (error) {
+                    reject(error);
+                } else{
+                    resolve(rows);
+                }
+            }
+        )
+    })
+}
+
+export default {
+    createProdutoRepository,
+    readALLProdutoRepository
+
+};

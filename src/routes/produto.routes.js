@@ -16,5 +16,7 @@ const produtoRouter = Router();
 // Atenção: aqui passamos a função SEM parênteses, porque o Express é quem vai chamá-la.
 produtoRouter.post("/produtos", produtoController.createProdutoController);
 
+produtoRouter.get('/produtos', produtoController.readALLProdutoController);
+
 // Exporta o router para ser registrado no app.js (ex.: app.use(produtoRouter))
 export default produtoRouter;
