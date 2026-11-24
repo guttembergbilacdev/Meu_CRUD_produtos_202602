@@ -11,7 +11,6 @@ const db = new sqlite3.Database("database.sqlite", (err) => {
   }
 );
 
-// Executa os comandos em ordem (a tabela é criada antes de qualquer INSERT/SELECT)
 db.serialize();
 
 export default db;
