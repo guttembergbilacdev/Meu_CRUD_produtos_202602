@@ -1,3 +1,4 @@
+import db from "../config/database.js"
 
 // Cria a tabela "produto" no banco, caso ela ainda não exista.
 // "nome" é UNIQUE, ou seja, não pode haver dois produtos com o mesmo nome.
@@ -20,7 +21,7 @@ function createProdutoRepository(novoproduto) {
         db.run(
             // Os "?" são parâmetros: o SQLite troca pelos valores do array abaixo.
             // Isso evita SQL Injection.
-            `INSERT INTO produto [nome, valor, tipo] VALUES(?,?,?)`,
+            `INSERT INTO produto (nome, valor, tipo) VALUES(?,?,?)`,
             [nome, valor, tipo],
             // Callback executado quando o banco terminar a operação
             (err) => {
@@ -43,7 +44,7 @@ function createProdutoRepository(novoproduto) {
 function readALLProdutoRepository() {
     return new Promise((resolve, reject) => {
         db.all(
-            'SELECT * FRON produto', [],
+            'SELECT * FROM produto', [],
             (error, rows) => {
                 if (error) {
                     reject(error);

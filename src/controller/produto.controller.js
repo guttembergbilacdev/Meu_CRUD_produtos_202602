@@ -29,7 +29,9 @@ async function createProdutoController(request, response) {
 
 async function readALLProdutoController(request, response) {
     try {
-        const produto = await produtoService.readALLProdutoService.status(200).send({produtos});
+        const produtos = await produtoService.readALLProdutoService();
+        
+        response.status(200).send({produtos});
     } catch(error) {
         response.status(400).send(error.message);
     }
