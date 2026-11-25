@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use(produtoRouter);
+app.use(produtoRoutes);
 
 app.listen(3000, () => {
     console.log("servidor rodando na porta 3000...");
